@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BwS - User Files</title>
+  <link rel="icon" href="data:,">
+  <meta name="description" content="Premium access to user text files.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      /* Core Palette */
+      --bg-dark: #030014;
+      --bg-card: rgba(17, 25, 40, 0.75);
+      --bg-glass: rgba(255, 255, 255, 0.03);
+
+      /* Neon Accents */
+      --primary: #00f2ff;
+      --secondary: #7000ff;
+      --accent: #ff0055;
+
+      /* Text */
+      --text-main: #ffffff;
+      --text-muted: #94a3b8;
+
+      /* Gradients */
+      --grad-main: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      --grad-glow: radial-gradient(circle at 50% -20%, #7000ff55, transparent 70%);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--bg-dark);
+      background-image:
+        radial-gradient(circle at 0% 0%, rgba(112, 0, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 100% 100%, rgba(0, 242, 255, 0.15) 0%, transparent 50%);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Background Grid Animation */
+    .bg-grid {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: -1;
+      mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+    }
+
+    /* Layout */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* Header */
+    header {
+      padding: 4rem 0 2rem;
+      text-align: center;
+      position: relative;
+    }
+
+    h1 {
+      font-size: clamp(3rem, 6vw, 5rem);
+      font-weight: 700;
+      background: linear-gradient(to right, #fff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+      animation: slideDown 0.8s ease-out;
+    }
+
+    .subtitle {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+      animation: fadeIn 1s ease-out 0.3s backwards;
+    }
+
+    /* Controls Bar */
+    .controls {
+      display: flex;
+      gap: 1.5rem;
+      margin: 3rem 0;
+      background: var(--bg-glass);
+      backdrop-filter: blur(12px);
+      padding: 1.5rem;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      flex-wrap: wrap;
+      animation: scaleIn 0.6s ease-out 0.5s backwards;
+    }
+
+    .search-box {
+      flex: 1;
+      position: relative;
+      min-width: 300px;
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 1.2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      transition: color 0.3s;
+    }
+
+    input[type="search"] {
+      width: 100%;
+      padding: 1rem 1rem 1rem 3.5rem;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+
+    input[type="search"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(0, 242, 255, 0.1);
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    input[type="search"]:focus+i {
+      color: var(--primary);
+    }
+
+    .sort-box {
+      position: relative;
+      min-width: 180px;
+    }
+
+    select {
+      width: 100%;
+      padding: 1rem 2.5rem 1rem 1.5rem;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 1rem;
+      cursor: pointer;
+      appearance: none;
+      transition: all 0.3s;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: var(--secondary);
+    }
+
+    .sort-box::after {
+      content: '\f078';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      position: absolute;
+      right: 1.2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+      font-size: 0.8rem;
+    }
+
+    /* Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+      padding-bottom: 4rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 1.5rem;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      cursor: default;
+      animation: fadeInUp 0.6s ease-out backwards;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--grad-main);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .card-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.1rem;
+      color: var(--text-main);
+      word-break: break-all;
+      line-height: 1.4;
+    }
+
+    .card-actions {
+      margin-top: auto;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-open {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.8rem 1.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .btn-open:hover {
+      background: var(--primary);
+      color: #000;
+      border-color: var(--primary);
+      box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
+    }
+
+    /* Empty State */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 24px;
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+
+    /* Animations */
+    @keyframes slideDown {
+      from {
+        transform: translateY(-30px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes scaleIn {
+      from {
+        transform: scale(0.95);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .controls {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg-grid"></div>
+
+  <div class="container">
+    <header>
+      <h1>BwS Files</h1>
+      <p class="subtitle">Secure access to your document repository. Browse, search, and manage your text files with a
+        premium interface.</p>
+    </header>
+
+    <main>
+      <div class="controls">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="search" id="searchInput" placeholder="Search documents..." autocomplete="off">
+        </div>
+        <div class="sort-box">
+          <select id="sortSelect">
+            <option value="az">Name (A-Z)</option>
+            <option value="za">Name (Z-A)</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="fileGrid" class="grid">
+        <!-- Items will be injected here -->
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Data Source
+    const FILE_LIST = [
+      "4- Harley Buckley.txt",
+      "e33-   Howard Yang.txt",
+      "e35-   Ian Crozier.txt",
+      "e51-   Daniel Reed.txt",
+      "e52-   Chester  Rucker.txt",
+      "f3-  Irma  Lopez.txt",
+      "f9-  Edward  Gardner.txt",
+      "g9-   William  Smith.txt",
+      "w25-   Carie Hutchinson .txt",
+      "w26-   Fiona Wilhite.txt",
+      "w27-   Robart Wilson.txt",
+      "w28-   James Wilson.txt",
+      "w33-   Fiona Wilhitel .txt",
+      "z10-   Garcia  Antonio.txt"
+    ];
+
+    // DOM Elements
+    const grid = document.getElementById('fileGrid');
+    const searchInput = document.getElementById('searchInput');
+    const sortSelect = document.getElementById('sortSelect');
+
+    // State
+    let currentFiles = [...FILE_LIST];
+
+    // Render Function
+    function renderFiles(files) {
+      grid.innerHTML = '';
+
+      if (files.length === 0) {
+        grid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <p>No documents found matching your search.</p>
+                    </div>
+                `;
+        return;
+      }
+
+      files.forEach((file, index) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.style.animationDelay = `${index * 0.05}s`;
+
+        card.innerHTML = `
+                    <div class="card-icon">
+                        <i class="far fa-file-alt"></i>
+                    </div>
+                    <div class="card-title">${file}</div>
+                    <div class="card-actions">
+                        <a href="${file}" target="_blank" class="btn-open">
+                            <span>Open</span>
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </div>
+                `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    // Filter & Sort Logic
+    function updateView() {
+      const query = searchInput.value.toLowerCase();
+      const sortMode = sortSelect.value;
+
+      // Filter
+      let filtered = FILE_LIST.filter(file =>
+        file.toLowerCase().includes(query)
+      );
+
+      // Sort
+      filtered.sort((a, b) => {
+        if (sortMode === 'az') return a.localeCompare(b);
+        if (sortMode === 'za') return b.localeCompare(a);
+        return 0;
+      });
+
+      renderFiles(filtered);
+    }
+
+    // Event Listeners
+    searchInput.addEventListener('input', updateView);
+    sortSelect.addEventListener('change', updateView);
+
+    // Initial Render
+    renderFiles(currentFiles);
+  </script>
+</body>
+
+</html>
